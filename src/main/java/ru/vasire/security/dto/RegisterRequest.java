@@ -21,7 +21,7 @@ public class RegisterRequest {
 
     @NotEmpty(message ="Поле LASTNAME обязательное")
     private String lastName;
-    @Email(message = "Не коректный адрес EMAIL")
+    @Email(message = "{user.email.incorrect}")
 
     @NotEmpty(message ="Поле EMAIL обязательное")
     @UniqEmail()
