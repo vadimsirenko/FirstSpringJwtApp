@@ -1,9 +1,8 @@
 package ru.vasire.security.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -13,21 +12,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.vasire.security.repositories.UserRepository;
-
-import java.util.Locale;
-
 @Configuration
 public class ApplicationConfig{
-
-    @Value("${spring.messages.basename}")
-    private String messagesBaseName;
-    @Value("${spring.messages.encoding}")
-    private String messagesEncoding;
-    @Value("${spring.messages.use-code-as-default-message}")
-    private boolean useCodeAsDefaultMessage;
     private final UserRepository userRepository;
 
-    public ApplicationConfig(UserRepository userRepository) {
+    @Autowired
+    public ApplicationConfig(UserRepository userRepository)
+    {
         this.userRepository = userRepository;
     }
 
@@ -53,17 +44,5 @@ public class ApplicationConfig{
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-/****************************************/
-
-    @Bean
-    public ResourceBundleMessageSource messageSource() {
-        var resourceBundleMessageSource=new ResourceBundleMessageSource();
-        resourceBundleMessageSource.setBasenames(messagesBaseName);
-        resourceBundleMessageSource.setUseCodeAsDefaultMessage(useCodeAsDefaultMessage);
-        resourceBundleMessageSource.setDefaultLocale(Locale.of("en"));
-        resourceBundleMessageSource.setDefaultEncoding(messagesEncoding);
-        return resourceBundleMessageSource;
-    }
-
 
 }

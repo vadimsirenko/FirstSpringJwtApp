@@ -1,7 +1,6 @@
 package ru.vasire.security.controllers;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,9 +13,13 @@ import ru.vasire.security.services.AuthenticationService;
 
 @Controller
 @RequestMapping("/api/v1/auth")
-@RequiredArgsConstructor
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
+
+    public AuthenticationController(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
+    }
+
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
             @RequestBody @Valid RegisterRequest request){
