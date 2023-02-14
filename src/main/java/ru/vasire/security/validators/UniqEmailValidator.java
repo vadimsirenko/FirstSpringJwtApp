@@ -2,19 +2,15 @@ package ru.vasire.security.validators;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.vasire.security.services.AuthenticationService;
 
 @Component
+@RequiredArgsConstructor
 public class UniqEmailValidator  implements ConstraintValidator<UniqEmail, String>
 {
-    private AuthenticationService authenticationService;
-
-    @Autowired
-    public UniqEmailValidator(AuthenticationService authenticationService) {
-        this.authenticationService = authenticationService;
-    }
+    private final AuthenticationService authenticationService;
 
     @Override
     public boolean isValid(String email, ConstraintValidatorContext constraintValidatorContext) {

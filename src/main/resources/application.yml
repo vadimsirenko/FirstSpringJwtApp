@@ -12,8 +12,13 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+    open-in-view: false # сессия Hibernate держится открытой все время обработки HTTP-запроса, включая этап создания представления (View) – JSON-ресурса или HTML-страницы. Это делает возможным ленивую загрузку данных в слое представления после коммита транзакции в слое бизнес-логики
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
       temp:
         use_jdbc_metadata_defaults: false
+      jakarta:
+        persistence:
+          sharedCache:
+            mode: NONE
