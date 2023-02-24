@@ -3,12 +3,14 @@ package ru.vasire.security.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import ru.vasire.security.validators.UniqEmail;
 
-@Getter
 @Setter
-@Builder
+@Getter
+@NoArgsConstructor
 public class RegisterRequest {
     @Size(min = 5, max = 14, message = "Поле PASSWORD должно содержать от 5 до 14 символов")
     @NotEmpty(message ="Поле PASSWORD обязательное")
