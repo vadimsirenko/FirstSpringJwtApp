@@ -9,8 +9,10 @@ import ru.vasire.security.dto.AuthenticationRequest;
 import ru.vasire.security.dto.AuthenticationResponse;
 import ru.vasire.security.dto.RegisterRequest;
 import ru.vasire.security.models.*;
+import ru.vasire.security.repositories.TokenRepository;
 import ru.vasire.security.repositories.UserRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -18,6 +20,7 @@ import java.util.Optional;
 public class AuthenticationService {
 
     private final UserRepository userRepository;
+    private final TokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
@@ -30,13 +33,16 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
                 .build();
-        userRepository.save(user);
+        var savedUser = userRepository.save(user);
         var jwtToken = jwtService.generateToken(user);
+        saveUserToken(savedUser, jwtToken);
         return AuthenticationResponse
                 .builder()
                 .token(jwtToken)
                 .build();
     }
+
+
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
@@ -45,6 +51,8 @@ public class AuthenticationService {
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow();
         var jwtToken = jwtService.generateToken(user);
+        revokeAllUserTokens(user);
+        saveUserToken(user, jwtToken);
         return AuthenticationResponse
                 .builder()
                 .token(jwtToken)
@@ -54,5 +62,27 @@ public class AuthenticationService {
     public boolean isUserRegistredByUsername(String email) {
         Optional<User> user = userRepository.findByEmail(email);
         return user.isPresent();
+    }
+
+    private void revokeAllUserTokens(User user){
+        List<Token> userTokenToRevoke = tokenRepository.findAllValidTokensByUser(user.getId());
+        if(userTokenToRevoke.isEmpty())
+            return;
+        for (Token token : userTokenToRevoke) {
+            token.setRevoked(true);
+            token.setExpired(true);
+        }
+        tokenRepository.saveAll(userTokenToRevoke);
+    }
+
+    private void saveUserToken(User user, String jwtToken) {
+        var token = Token.builder()
+                .token(jwtToken)
+                .expired(false)
+                .revoked(false)
+                .tokenType(TokenType.BEARER)
+                .user(user)
+                .build();
+        tokenRepository.save(token);
     }
 }
